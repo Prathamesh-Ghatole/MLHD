@@ -8,11 +8,11 @@ Problem Statement:
 
 To generate random file paths with specified sample size'''
 
-parser = argparse.ArgumentParser()
-parser.add_argument('size', metavar='n', type=int)
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('size', metavar='n', type=int)
+# args = parser.parse_args()
 
-n = int(args.size)
+# n = int(args.size)
 
 #Load up MLHD Data Folder
 folderlist = os.listdir('/data/mlhd/')
@@ -47,6 +47,6 @@ def write(file_name, list_of_paths):
             f.writelines([name+'\n' for name in list_of_paths])
 
 
-# Driver code
-generated_ls = gen_file_list(n)
-write('random_file_paths.txt', generated_ls)
+# # Driver code
+# generated_ls = gen_file_list(n)
+# write('random_file_paths.txt', generated_ls)
