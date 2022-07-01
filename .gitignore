@@ -2,3 +2,5 @@ __pycache__/*
 env_mlhd/*
 unk_ids/*
 lib/__pycache__/*
+cache.sqlite
+demo_cache.sqlite
