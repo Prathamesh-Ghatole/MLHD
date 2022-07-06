@@ -1,13 +1,9 @@
-import psycopg2
+from sqlalchemy import create_engine
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="musicbrainz_db",
-    user="musicbrainz",
-    password="musicbrainz",
-    port=5432)
+engine = create_engine('postgresql://musicbrainz:musicbrainz@localhost/musicbrainz_db')
+
+conn = engine.connect()
 
 cursor = conn.cursor()
 
 get_con = lambda : conn
-get_cursror = lambda : cursor
