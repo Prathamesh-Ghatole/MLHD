@@ -4,10 +4,9 @@ import pandas as pd
 # NOTE this fuction drops all rows with missing recording-MBID values.
 
 # Reads a list of file paths and reads + compiles data into a single pd.DataFrame
-def read_files(file_path_repo):
+def read_files(file_path_repo, how_many=None):
     # init new empty main dataframe
     df = pd.DataFrame(columns = ['timestamp', 'artist-MBID', 'release-MBID', 'recording-MBID'])
-    
     
     # If input is not a list, open the string as path.
     if not isinstance(file_path_repo, list):
@@ -21,11 +20,21 @@ def read_files(file_path_repo):
         file_paths = file_path_repo    
     
     # Read files and compile into single df
-    for pth in file_paths:
-        temp = pd.read_csv(pth, sep='\t', names=['timestamp', 'artist-MBID', 'release-MBID', 'recording-MBID'])
-        temp = temp[-temp['recording-MBID'].isna()]
+    if how_many==None:
+        for pth in file_paths:
+            temp = pd.read_csv(pth, sep='\t', names=['timestamp', 'artist-MBID', 'release-MBID', 'recording-MBID'])
+            temp = temp[-temp['recording-MBID'].isna()]
 
-        df = pd.concat([df, temp])
+            df = pd.concat([df, temp])
+    
+    elif how_many<len(file_paths):
+        for pth in file_paths[:how_many]:
+            temp = pd.read_csv(pth, sep='\t', names=['timestamp', 'artist-MBID', 'release-MBID', 'recording-MBID'])
+            temp = temp[-temp['recording-MBID'].isna()]
+
+            df = pd.concat([df, temp])
+    elif how_many > len(file_paths):
+        raise 'Error: too many files to read.'
     
     return df
 
