@@ -4,3 +4,4 @@ unk_ids/*
 lib/__pycache__/*
 cache.sqlite
 demo_cache.sqlite
+test.ipynb
