@@ -3,13 +3,15 @@ import pandas as pd
 
 def get_table(query, limit=None):
     with pg.get_con() as conn:
+        try:
+            if limit is None:
+                df = pd.read_sql(query, con=conn)
+            else:
+                df = pd.read_sql(query + " LIMIT {}".format(limit), con=conn)
+        except:
+            raise ValueError("Enter valid limit or recheck query")
         
-        if limit is int and limit > 0:
-            df = pd.read_sql(query + " LIMIT {}".format(limit), con=conn)
-        else:
-            df = pd.read_sql(query, con=conn)
-        
-    return df
+    return df 
 
 ### Recordings
 def get_recording(limit=None):
