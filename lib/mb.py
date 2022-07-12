@@ -35,6 +35,9 @@ def get_artist_redirects(limit=None):
 def get_track_redirects(limit=None): 
     return get_table('select t.gid AS new, tgr.gid AS old from track t join track_gid_redirect tgr on tgr.new_id = t.id', limit)
 
+def get_track_redirects_old(limit=None): 
+    return get_table('select gid from track_gid_redirect', limit)
+
 def get_tracks(limit=None): 
     return get_table('SELECT gid FROM track', limit)
 
