@@ -11,7 +11,7 @@ def get_table(query, limit=None):
         except:
             raise ValueError("Enter valid limit or recheck query")
         
-    return df 
+    return df
 
 ### Recordings
 def get_recording(limit=None):
