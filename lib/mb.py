@@ -23,10 +23,15 @@ def get_recording_name(limit=None):
 def get_recording_redirects(limit=None):
     return get_table('select r.gid AS new, rgr.gid AS old from recording r join recording_gid_redirect rgr on rgr.new_id = r.id', limit)
 
+def get_recording_canonical(limit=None): 
+    return get_table('select recording_mbid as old, canonical_recording_mbid as new from mapping.canonical_recording_redirect', limit)
 ### Artists
 
 def get_artist(limit=None): 
     return get_table('SELECT gid FROM artist', limit)
+
+def get_artist_name(limit=None): 
+    return get_table('SELECT gid, name FROM artist', limit)
 
 def get_artist_redirects(limit=None):
     return get_table('select a.gid AS new, agr.gid AS old from artist a join artist_gid_redirect agr on agr.new_id = a.id', limit)
