@@ -1,5 +1,7 @@
 import lib.postgres_conn as pg
 import pandas as pd
+from warnings import simplefilter
+simplefilter(action='ignore', category=UserWarning)
 
 def get_table(query, limit=None):
     with pg.get_con() as conn:
