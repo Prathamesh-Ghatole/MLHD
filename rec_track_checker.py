@@ -22,7 +22,9 @@ ENV = io.get_config()
 MLHD_ROOT = ENV['MLHD_ROOT']
 WRITE_ROOT = ENV['WRITE_ROOT']
 LOG_WRITE_PATH = ENV['LOG_WRITE_PATH']
-LOG_EPOCH = ENV['LOG_EPOCH']
+
+# LOG_EPOCH = ENV['LOG_EPOCH']
+LOG_EPOCH = 1
 
 console.log("Generating MLHD Paths...")
 MLHD_FILES = io.generate_paths(MLHD_ROOT)
@@ -39,7 +41,7 @@ OUTPUT_LOG = {}
 
 console.log("Looping through MLHD files...")
 file_counter = 0
-for path in track(MLHD_FILES[:100]):
+for path in track(MLHD_FILES):
     
     # Start Timer
     start = monotonic()
@@ -56,7 +58,7 @@ for path in track(MLHD_FILES[:100]):
     file_counter += 1
     
     io.log_output(output, path, round(end - start, 3), monotonic(), OUTPUT_LOG)
-    if file_counter%10 == 0:
+    if file_counter%LOG_EPOCH == 0:
         _ = io.write_log(OUTPUT_LOG, LOG_WRITE_PATH)
 
 master_end = monotonic()
