@@ -38,6 +38,43 @@ def load_path(file_path):
 
     return df
 
+def load_path_file(paths, how_many = None, drop_subset = None):
+    """
+    Input: List of paths to files or text file with paths on each line.
+    """
+    if not isinstance(paths, list):
+        # Open a file with MLHD file paths to process
+        with open(paths, 'r') as f:
+            file_paths = f.readlines()
+            file_paths= [item.strip() for item in file_paths]
+    
+    elif isinstance(paths, list):
+        #paths is list of paths
+        file_paths = paths
+    else:
+        raise ValueError("Paths must be either a list of paths or a text file with paths")
+
+    if how_many is None:
+        how_many = len(file_paths)
+    elif how_many <= len(file_paths):
+        pass
+    else:
+        raise ValueError("how_many must be <= len(paths)")
+    
+    df = pd.DataFrame(columns = ['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID'])
+    
+    ls = [df]
+    for path in file_paths[:how_many]:
+        ls.append(load_path(path))
+    
+    df = pd.concat(ls, ignore_index=True)
+    del ls
+    if drop_subset is None:
+        return df
+    else:
+        return df.dropna(subset = drop_subset)
+
+
 def write_frame(df_input, original_path):
     """
     Function to write a dataframe to a csv file
