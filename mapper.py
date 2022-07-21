@@ -34,12 +34,26 @@
 import lib.mb as mb
 import lib.load as load
 import lib.io_ as io
+from time import monotonic
+
 
 ### LOADING MB TABLES ###
-MB_rec_name = mb.get_recording_name()
-MB_rec_redir = mb.get_recording_redirects()
-MB_rec_canon = mb.get_recording_canonical()
-MB_track_name = mb.get_track_name()
-MB_artist_redir = mb.get_artist_redirects()
-MB_artist_name = mb.get_artist_name()
+"""Maybe use Lazy Loading?"""
+# MB_rec_name = mb.get_recording_name()
+# MB_rec_redir = mb.get_recording_redirects()
+# MB_rec_canon = mb.get_recording_canonical()
+# MB_track_name = mb.get_track_name()
+# MB_artist_redir = mb.get_artist_redirects()
+# MB_artist_name = mb.get_artist_name()
 
+### Load MLHD files ###
+
+start_main = monotonic()
+df = io.load_path_file('random_file_paths.txt', drop_subset = ['recording_MBID'])
+
+end_main = monotonic()
+
+print(df.head())
+print(df.shape)
+
+print(round(end_main - start_main, 3))
