@@ -1,11 +1,6 @@
 from lib import io_ as io
 from time import monotonic
-from tqdm import tqdm
 from rich.progress import track
-import pickle
-
-import warnings
-warnings.simplefilter(action='ignore', category=UserWarning)
 
 from rich import print
 from rich.console import Console
