@@ -1,4 +1,4 @@
-import postgres_conn as pg
+import lib.postgres_conn as pg
 import pandas as pd
 from warnings import simplefilter
 simplefilter(action='ignore', category=UserWarning)
