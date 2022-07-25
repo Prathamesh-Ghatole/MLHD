@@ -4,5 +4,3 @@ lib/__pycache__/*
 test.ipynb
 rec_track_checker/__pycache__/*
 rec_track_checker/
-
-warehouse/MB_tables/*
