@@ -158,3 +158,32 @@ def check_rec(df, MB_track_set, MB_track_redir_set):
     else: 
         return ret
 
+def replace(value, lookup_df, col_name):
+    """Apply or map this function on a pandas series to fetch values from a lookup_df column with input value as index key
+    
+    Keyword arguments:
+    value       : Value to search in lookup_df's index
+    lookup_df   : DataFrame to lookup values. Return value from col_name column
+    col_name    : Column name in lookup_df to lookup values
+    """
+    
+    try:
+        return lookup_df.at[value, col_name]
+    except KeyError:
+        return value
+
+def replace_multi(value, lookup_df):
+    """lookup a value in the index of a lookup_df and return the row as a tuple
+
+    Args:
+        value (str): value to lookup in the DataFrame index.
+        lookup_df (Pandas.DataFrame): DataFrame to lookup values. Index contains the values to lookup.
+
+    Returns:
+        tuple: A tuple of values representing rows of lookup_df with index = value.
+                Equivalent to pandas.DataFrame.loc[value, :], but faster.
+    """
+    try:
+        return tuple(replace(value, lookup_df, col_name) for col_name in lookup_df.columns)
+    except KeyError:
+        return tuple(None for col_name in lookup_df.columns)
