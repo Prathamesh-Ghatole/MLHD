@@ -1,3 +1,4 @@
+import pandas as pd
 import requests
 import requests_cache
 from jinja2 import Environment, BaseLoader
@@ -5,8 +6,8 @@ from datetime import datetime
 
 jenv = Environment(loader=BaseLoader)
 requests_cache.install_cache('../warehouse/mlhd_cache', expire_after=86400, allowable_methods=['GET', 'POST'])
+# 86400 seconds = 24 hours. i.e. Cache will be cleared after 24 hours.
 
-# Functions
 def gen_chunk(df, chunksize=15):
     """Breaks the dataframe into chunks of size "chunksize".
 
@@ -43,7 +44,7 @@ def make_payload(df):
         payload.append(json_inp)
     return payload
 
-def get_mapping(payload):
+def get_mapping(payload, mbc = True):
     """Function to get post request reply from payload
 
     Args:
@@ -52,7 +53,10 @@ def get_mapping(payload):
     Returns:
         list: list of dictionaries where each dictionary is a reply for a row.
     """
-    base_url = "https://labs.api.listenbrainz.org/mbid-mapping/json"
+    if mbc==False:
+        base_url = "https://labs.api.listenbrainz.org/mbid-mapping/json"
+    else:
+        base_url = "https://datasets.listenbrainz.org/mbc-lookup/json"
     r = requests.post(base_url, json = payload)
     try:
         return r.json()
@@ -71,12 +75,12 @@ def extract_mapping(replies: list, features = ['artist_credit_arg', 'recording_a
     """
     return list(tuple(reply[feature] for feature in features) for reply in replies)
 
-def mapper(df_input):
+def mapper(df_input, mbc = True):
     """Master Function to fetch and map replies from mbid-mapper to input dataframe"""
     replies = []
     for chunk in gen_chunk(df_input, 15):
         # payload = make_payload((chunk))
-        reply = extract_mapping(get_mapping(make_payload(chunk)))
+        reply = extract_mapping(get_mapping(make_payload(chunk), mbc = mbc))
         replies.extend(reply)
     
     reply_df = pd.DataFrame(replies)
@@ -84,6 +88,7 @@ def mapper(df_input):
     reply_df.rename(columns={2: 'received_rec_mbid'}, inplace=True)
     
     return df_input.join(reply_df, on = ['artist_credit', 'rec_name'], how='left')
+
 
 def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     template = """
@@ -105,4 +110,6 @@ def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     report_html = jtemplate.render(df=different)
     
     with open(base_path+f_name, "w", encoding="utf-8") as fp:
-        fp.write(report_html) 
+        fp.write(report_html)
+
+    return (base_path+f_name)
