@@ -114,6 +114,10 @@ console.print("\nRows with different mlhd_canonical_mbids and received_recording
 console.print(mapped_output.received_rec_mbid.compare(mapped_output.mlhd_canonical_mbid))
 print()
 
-mapped_output.to_csv('warehouse/mapper_outputs/mlhd_artist_credits_mapped_{num_rows}.csv', index=False)
-output_path = mapper_helper.write_html(mapped_output, suffix= ('mbc' if mbc_flag else 'mbid-mapper'))
-console.print(f"\nWriting Output to {output_path}\nURL: 'https://wolf.metabrainz.org/~snaek/{output_path.split('/')[-1]}'")
+suffix_str = ('mbc' if mbc_flag else 'mbid-mapper')
+output_path = mapper_helper.write_html(mapped_output, suffix = suffix_str)
+mapped_output.to_csv(f'warehouse/mapper_outputs/mlhd_artist_credits_mapped_{suffix_str}_{num_rows}.csv', index=False)
+
+console.print(f"\nWriting HTML Output to: '{output_path}'")
+console.print(f"Writing CSV Output to: 'warehouse/mapper_outputs/mlhd_artist_credits_mapped_{suffix_str}_{num_rows}.csv'")
+console.print(f"URL: 'https://wolf.metabrainz.org/~snaek/{output_path.split('/')[-1]}'")
