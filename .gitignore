@@ -1,9 +1,6 @@
 __pycache__/*
 env_mlhd/*
-unk_ids/*
 lib/__pycache__/*
-cache.sqlite
-demo_cache.sqlite
 test.ipynb
 rec_track_checker/__pycache__/*
 rec_track_checker/
