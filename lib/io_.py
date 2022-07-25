@@ -2,11 +2,11 @@ import os
 import json
 import pandas as pd
 import pickle
-from . import mb
+import mb
 
 def get_config():
     """Function to load the config file into environment variable"""	
-    with open('config.json', 'r') as f:
+    with open('../config.json', 'r') as f:
         ENV_VAR = json.load(f)
     
     return ENV_VAR
