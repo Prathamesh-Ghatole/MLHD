@@ -112,4 +112,7 @@ def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     with open(base_path+f_name, "w", encoding="utf-8") as fp:
         fp.write(report_html)
 
-    return (base_path+f_name)
+    # path = base_path+f_name
+    url = "https://wolf.metabrainz.org/~snaek/{}".format(f_name)
+    
+    return (url)
