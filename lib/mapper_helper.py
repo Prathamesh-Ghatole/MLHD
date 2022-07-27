@@ -92,10 +92,18 @@ def mapper(df_input, mbc = True):
 
 def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     template = """
-<table>
-<tr><th>Artist</th><th>Recording</th><th>Canonical MBID</th><th>Canonical Data Lookup</th></tr>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<table cellspacing="1" bgcolor="#000000" cellpadding="5">
+<tr bgcolor="#ffffff"><th>Artist</th><th>Recording</th><th>Canonical MBID</th><th>Canonical Data Lookup</th></tr>
 {% for key,value in df.iterrows() %}
-<tr>
+<tr bgcolor="#ffffff">
 <td>{{value['artist_credit']}}</td>
 <td>{{value['rec_name']}}</td>
 <td><a href="https://musicbrainz.org/recording/{{value['mlhd_canonical_mbid']}}">{{value['mlhd_canonical_mbid']}}</a></td>
@@ -103,6 +111,9 @@ def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
 </tr>
 {% endfor %}
 </table>
+
+</body>
+</html>
 """
     f_name = "mlhd-lookup-{}-{}.html".format(datetime.now().strftime("%y-%m-%d"), suffix)
     jtemplate = jenv.from_string(template)
