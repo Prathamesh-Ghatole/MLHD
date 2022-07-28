@@ -74,3 +74,10 @@ def get_artist_credit(limit=None):
     ac.name as artist_credit 
     from recording join artist_credit ac 
     on ac.id=artist_credit;""", limit)
+
+def get_mbc_combined(limit=None):
+    return get_table("""
+    SELECT recording_mbid,
+    combined_lookup
+    FROM mapping.canonical_musicbrainz_data
+    """, limit)
