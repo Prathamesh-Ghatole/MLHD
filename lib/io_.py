@@ -170,7 +170,7 @@ def replace(value, lookup_df, col_name):
     try:
         return lookup_df.at[value, col_name]
     except KeyError:
-        return value
+        return None
 
 def replace_multi(value, lookup_df):
     """lookup a value in the index of a lookup_df and return the row as a tuple
