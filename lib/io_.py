@@ -3,6 +3,9 @@ import json
 import pandas as pd
 import pickle
 import lib.mb as mb
+from pyarrow import _csv as csv
+from pyarrow import dataset as dataset
+
 
 def get_config():
     """Function to load the config file into environment variable"""	
@@ -12,6 +15,7 @@ def get_config():
     return ENV_VAR
 
 ENV = get_config()
+
 
 def generate_paths(MLHD_ROOT):
     """Function to generate a list of paths to MLHD files"""	
@@ -24,19 +28,75 @@ def generate_paths(MLHD_ROOT):
 
     return MLHD_FILES
 
-def load_path(file_path):
-    """Function to load a file and return a dataframe"""
 
+def load_path_pandas(path):
+    """
+    Function to load a file and return a dataframe
+    """
     df = pd.read_csv(
-        file_path, sep='\t',
-        header=None,
-        names = ['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID'],
-        dtype={'artist_MBID': str, 'release_MBID': str, 'recording_MBID': str}
+        path, 
+        sep='\t', 
+        header=None, 
+        names=['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID']
         )
-    
-    # df.drop(df[df['recording_MBID'].isna()].index, inplace=True)
 
     return df
+
+arrow_csv_read_options  = csv.ReadOptions(
+    column_names=['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID']
+    )
+arrow_csv_parse_options = csv.ParseOptions(
+    delimiter='\t',
+    )
+
+def load_path(file_path, to_pandas = True):
+    """Function to load a file and return a dataframe"""
+
+    df = csv.read_csv(
+        file_path,
+        read_options = arrow_csv_read_options,
+        parse_options = arrow_csv_parse_options,
+        )
+    
+    if to_pandas:
+        return df.to_pandas()
+    else:
+        return df
+
+
+def load_path_file_pandas(paths, how_many = None, drop_subset = None):
+    """
+    Input: List of paths to files or text file with paths on each line.
+    """
+    if not isinstance(paths, list):
+        # Open a file with MLHD file paths to process
+        with open(paths, 'r') as f:
+            file_paths = f.readlines()
+            file_paths= [item.strip() for item in file_paths]
+    
+    elif isinstance(paths, list):
+        #paths is list of paths
+        file_paths = paths
+    else:
+        raise ValueError("Paths must be either a list of paths or a text file with paths")
+
+    if how_many is None:
+        how_many = len(file_paths)
+    elif how_many <= len(file_paths):
+        pass
+    else:
+        raise ValueError("how_many must be <= len(paths)")
+    
+    df = pd.DataFrame(columns = ['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID'])
+    
+    ls = [load_path_pandas(path) for path in file_paths[:how_many]]
+    
+    df = pd.concat(ls, ignore_index=True)
+    del ls
+    if drop_subset is None:
+        return df
+    else:
+        return df.dropna(subset = drop_subset)
 
 def load_path_file(paths, how_many = None, drop_subset = None):
     """
@@ -63,9 +123,7 @@ def load_path_file(paths, how_many = None, drop_subset = None):
     
     df = pd.DataFrame(columns = ['timestamp', 'artist_MBID', 'release_MBID', 'recording_MBID'])
     
-    ls = [df]
-    for path in file_paths[:how_many]:
-        ls.append(load_path(path))
+    ls = [load_path(path) for path in file_paths[:how_many]]
     
     df = pd.concat(ls, ignore_index=True)
     del ls
@@ -74,6 +132,15 @@ def load_path_file(paths, how_many = None, drop_subset = None):
     else:
         return df.dropna(subset = drop_subset)
 
+### Complete this function if MLHD is converted to pickle, or if pyarrow starts supporting CSV+zst
+#  def load_folder(folder_path):
+#     """
+#     Function to load a folder of MLHD files using arrow
+#     """
+
+#     df = dataset.dataset(folder_path)
+#     df = df.to_pandas()
+#     return df
 
 def write_frame(df_input, original_path):
     """
