@@ -49,15 +49,23 @@ arrow_csv_parse_options = csv.ParseOptions(
     delimiter='\t',
     )
 
-def load_path(file_path, to_pandas = True):
-    """Function to load a file and return a dataframe"""
+def load_path(file_path, to_pandas = True, mlhd = True):
+    """Function to load a file and return a dataframe
+    file_path: path to file
+    to_pandas: boolean to return dataframe or arrow table
+    mlhd: boolean to specify if reading MLHD tsv or normal csv file.
+    """
+    if mlhd:
+        df = csv.read_csv(
+            file_path,
+            read_options = arrow_csv_read_options,
+            parse_options = arrow_csv_parse_options,
+            )
+    else:
+        df = csv.read_csv(
+            file_path,
+            )
 
-    df = csv.read_csv(
-        file_path,
-        read_options = arrow_csv_read_options,
-        parse_options = arrow_csv_parse_options,
-        )
-    
     if to_pandas:
         return df.to_pandas()
     else:
