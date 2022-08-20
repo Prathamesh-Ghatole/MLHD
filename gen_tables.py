@@ -33,6 +33,7 @@ tables_func_name = {
     "artist_name.parquet": mb.get_artist_name,
     "artist_redirects.parquet": mb.get_artist_redirects,
     "recording_canonical.parquet": mb.get_recording_canonical,
+    "recording_gid.parquet": mb.get_recording_gid,
     "recording_name.parquet": mb.get_recording_name,
     "recording_redirects.parquet": mb.get_recording_redirects,
     "track_name.parquet": mb.get_track_name,

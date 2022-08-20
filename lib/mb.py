@@ -22,6 +22,9 @@ def get_recording(limit=None):
 def get_recording_name(limit=None):
     return get_table('SELECT gid, name FROM recording', limit)
 
+def get_recording_gid(limit=None):
+    return get_table('SELECT gid FROM recording', limit)
+
 def get_recording_redirects(limit=None):
     return get_table("""
     select r.gid AS new, 
