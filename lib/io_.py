@@ -23,7 +23,7 @@ def generate_paths(MLHD_ROOT):
     
     for root, dirs, files in os.walk(MLHD_ROOT):
         for file in files:
-            if file.endswith(".gz"):
+            if file.endswith(".gz") or file.endswith(".zst"):
                 MLHD_FILES.append(os.path.join(root, file))
 
     return MLHD_FILES
@@ -104,7 +104,7 @@ def load_path_file_pandas(paths, how_many = None, drop_subset = None):
     if drop_subset is None:
         return df
     else:
-        return df.dropna(subset = drop_subset)
+        return df.dropna(subset = drop_subset, inplace=True)
 
 def load_path_file(paths, how_many = None, drop_subset = None):
     """
