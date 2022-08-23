@@ -5,6 +5,7 @@ import pickle
 import lib.mb as mb
 from pyarrow import _csv as csv
 from pyarrow import dataset as dataset
+from numpy import nan
 
 
 def get_config():
@@ -67,7 +68,10 @@ def load_path(file_path, to_pandas = True, mlhd = True):
             )
 
     if to_pandas:
-        return df.to_pandas()
+        df = df.to_pandas()
+        df.replace('' , nan, inplace=True)
+        
+        return df
     else:
         return df
 
@@ -104,7 +108,7 @@ def load_path_file_pandas(paths, how_many = None, drop_subset = None):
     if drop_subset is None:
         return df
     else:
-        return df.dropna(subset = drop_subset, inplace=True)
+        return df.dropna(subset = drop_subset)
 
 def load_path_file(paths, how_many = None, drop_subset = None):
     """
