@@ -249,17 +249,17 @@ def replace(value, lookup_df, col_name):
     try:
         return lookup_df.at[value, col_name]
     except KeyError:
-        return None
+        return nan
 
 def replace_multi(value, lookup_df):
     """lookup a value in the index of a lookup_df and return the row as a tuple
 
     Args:
         value (str): value to lookup in the DataFrame index.
-        lookup_df (Pandas.DataFrame): DataFrame to lookup values. Index contains the values to lookup.
+        lookup_df (Pandas.DataFrame): DataFrame to lookup values in. Index contains the values to lookup.
 
     Returns:
-        tuple: A tuple of values representing rows of lookup_df with index = value.
+        tuple: A tuple of values representing columns of lookup_df with index = value.
                 Equivalent to pandas.DataFrame.loc[value, :], but faster.
     """
     try:
