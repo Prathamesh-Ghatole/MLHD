@@ -1,8 +1,12 @@
 import pandas as pd
 import requests
 import requests_cache
+import re
+import lib.io_ as io
 from jinja2 import Environment, BaseLoader
 from datetime import datetime
+from unidecode import unidecode
+from numpy import nan
 
 jenv = Environment(loader=BaseLoader)
 requests_cache.install_cache('../warehouse/mlhd_cache', expire_after=86400, allowable_methods=['GET', 'POST'])
@@ -89,6 +93,31 @@ def mapper(df_input, mbc = True):
     
     return df_input.join(reply_df, on = ['artist_credit', 'rec_name'], how='left')
 
+def clean_merge_names(rec_name, artist_name):
+    """Function to clean the names of the recording and artist.
+
+    Args:
+        rec_name (str): recording name
+        artist_name (str): artist name
+
+    Returns:
+        str: cleaned and merged recording and artist name for lookup.
+    """
+    return unidecode(re.sub(r'[^\w]+', '', artist_name + rec_name).lower())
+
+def mapper_mbc(df_input, mbc_table):
+    series_artist_name = df_input.artist_credit
+    series_rec_name = df_input.rec_name
+
+    cleaned = pd.Series([
+        clean_merge_names(rec_name, artist_name) 
+        for artist_name, rec_name 
+        in zip(series_artist_name, series_rec_name)
+        ])
+    
+    df_input['received_rec_mbid'] = cleaned.map(lambda value: io.replace(value, mbc_table, 'recording_mbid'))
+
+    return df_input
 
 def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     template = """
@@ -127,3 +156,20 @@ def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
     url = "https://wolf.metabrainz.org/~snaek/{}".format(f_name)
     
     return (url)
+
+def clean_rec(df_input, rec_gid_set, MB_rec_redirects, MB_rec_canonical, MB_artist_credit_list):
+    
+    df_input['mlhd_canonical_mbid'] = df_input.mlhd_recording_mbid.map(
+        lambda x: io.replace(x, MB_rec_redirects, 'new') 
+        if x not in rec_gid_set else x)
+    
+    df_input['mlhd_canonical_mbid'] = df_input['mlhd_canonical_mbid'].map(
+        lambda x: io.replace(x, MB_rec_canonical, 'new')
+        if io.replace(x, MB_rec_canonical, 'new') is not nan else x)
+    
+    rec_name_artist_credit = df_input['mlhd_canonical_mbid'].map(lambda x: io.replace_multi(x, MB_artist_credit_list))
+    df_input['rec_name'], df_input['artist_credit'] = zip(*rec_name_artist_credit)
+    
+    df_input.dropna(subset = ['rec_name'], inplace=True)
+
+    return df_input
