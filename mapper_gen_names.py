@@ -58,23 +58,11 @@ console.log("loaded MLHD files with {} rows. Took {} seconds".format(df.shape[0]
 console.log('Starting Cleanup...')
 time_logs['clean_start'] = monotonic()
 
-# df['mlhd_canonical_mbid'] = df['mlhd_recording_mbid'].map(lambda x: io.replace(x, MB_rec_redirects, 'new'))
-# df['mlhd_canonical_mbid'] = df['mlhd_canonical_mbid'].map(lambda x: io.replace(x, MB_rec_canonical, 'new'))
-# df['recording_name'] = df['mlhd_canonical_mbid'].map(lambda x: replace(x, MB_rec_names, 'name'))
-
-# rec_name_artist_credit = df['mlhd_canonical_mbid'].map(lambda x: io.replace_multi(x, MB_artist_credit_list))
-# df['rec_name'], df['artist_credit'] = zip(*rec_name_artist_credit)
-
-# console.log("Dropping {} rows with missing artist_credit/rec_mbid".format(df.shape[0] - len(df.dropna(subset = ['rec_name', 'artist_credit']))))
-# df.to_csv('warehouse/mapper_outputs/mlhd_artist_credits_test_nodrop.csv', index=False)
-
-# df.dropna(subset = ['rec_name', 'artist_credit'], inplace=True)
-
 shape_before = df.shape[0]
 df1 = mapper_helper.clean_rec(df, rec_gid_set, MB_rec_redirects, MB_rec_canonical, MB_artist_credit_list)
 shape_after = df.shape[0]
 
-df.to_csv('warehouse/mapper_outputs/mlhd_artist_credits_test.csv', index=False)
+df.to_csv('warehouse/mapper_outputs/mlhd_artist_credits.csv', index=False)
 console.log(f"Dropped {shape_before - shape_after} rows")
 
 
