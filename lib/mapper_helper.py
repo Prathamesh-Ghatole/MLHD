@@ -93,28 +93,16 @@ def mapper(df_input, mbc = True):
     
     return df_input.join(reply_df, on = ['artist_credit', 'rec_name'], how='left')
 
-def clean_merge_names(rec_name, artist_name):
-    """Function to clean the names of the recording and artist.
-
-    Args:
-        rec_name (str): recording name
-        artist_name (str): artist name
-
-    Returns:
-        str: cleaned and merged recording and artist name for lookup.
-    """
-    return unidecode(re.sub(r'[^\w]+', '', artist_name + rec_name).lower())
-
 def mapper_mbc(df_input, mbc_table):
-    series_artist_name = df_input.artist_credit
-    series_rec_name = df_input.rec_name
-
-    cleaned = pd.Series([
-        clean_merge_names(rec_name, artist_name) 
-        for artist_name, rec_name 
-        in zip(series_artist_name, series_rec_name)
-        ])
+    series_rec_name = df_input.rec_name.to_numpy()
+    series_artist_name = df_input.artist_credit.to_numpy()
     
+    clean_merge_names = lambda artist_name, rec_name: unidecode(re.sub(r'[^\w]+', '', artist_name + rec_name).lower())
+    cleaned = pd.Series([
+        clean_merge_names(artist_name, rec_name)
+        for artist_name, rec_name in zip(series_artist_name, series_rec_name)
+    ])
+
     df_input['received_rec_mbid'] = cleaned.map(lambda value: io.replace(value, mbc_table, 'recording_mbid'))
 
     return df_input
