@@ -8,16 +8,18 @@ Problem Statement:
 
 To generate random file paths with specified sample size'''
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('size', metavar='n', type=int)
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('size', metavar='n', type=int)
+parser.add_argument('path', metavar='p', type=str)
+args = parser.parse_args()
 
-# n = int(args.size)
+n = int(args.size)
+p = args.path
 
 #Load up MLHD Data Folder
-folderlist = os.listdir('/data/mlhd/')
-get_file_list = lambda fol_name: os.listdir('/data/mlhd/{}/'.format(fol_name))
-get_path = lambda folder, file: '/data/mlhd/{}/{}'.format(folder, file)
+folderlist = os.listdir('/data/mlhd-zstd/')
+get_file_list = lambda fol_name: os.listdir('/data/mlhd-zstd/{}/'.format(fol_name))
+get_path = lambda folder, file: '/data/mlhd-zstd/{}/{}'.format(folder, file)
 
 def gen_file_list(sample_size):
     ls = []
@@ -45,8 +47,12 @@ def write(file_name, list_of_paths):
 
         with open(file_name, 'w') as f:
             f.writelines([name+'\n' for name in list_of_paths])
+    else:
+        with open(file_name, 'w') as f:
+            f.writelines([name+'\n' for name in list_of_paths])
 
 
 # # Driver code
-# generated_ls = gen_file_list(n)
-# write('random_file_paths.txt', generated_ls)
+generated_ls = gen_file_list(n)
+write(p, generated_ls)
+print('Writing to file {}'.format(p))
