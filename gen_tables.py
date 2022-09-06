@@ -36,6 +36,7 @@ tables_func_name = {
     "recording_gid.parquet": mb.get_recording_gid,
     "recording_name.parquet": mb.get_recording_name,
     "recording_redirects.parquet": mb.get_recording_redirects,
+    "canonical_recording_redirects.parquet": mb.get_canonical_recording_redirect,
     "track_name.parquet": mb.get_track_name,
     "track_redirects.parquet": mb.get_track_redirects,
     "mbc_combined.parquet": mb.get_mbc_combined

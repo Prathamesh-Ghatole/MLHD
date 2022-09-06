@@ -38,6 +38,12 @@ def get_recording_canonical(limit=None):
     select recording_mbid as old, 
     canonical_recording_mbid as new 
     from mapping.canonical_recording_redirect""", limit)
+
+def get_canonical_recording_redirect(limit=None): 
+    return get_table("""
+    select recording_mbid as old, 
+    canonical_recording_mbid, canonical_release_mbid
+    from mapping.canonical_recording_redirect""", limit)
 ### Artists
 
 def get_artist(limit=None): 
