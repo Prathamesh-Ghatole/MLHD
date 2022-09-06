@@ -87,12 +87,12 @@ else:
 ### Mapper ###
 
 try:
-    num_rows = int(console.input("\nHow many rows do you want to process? [1000]: "))
+    num_rows = int(console.input("\nHow many rows do you want to process? [ALL]: "))
 except ValueError:
-    num_rows = 1000
+    num_rows = df.shape[0]
 
 if (num_rows < 0) or (num_rows > df.shape[0]):
-    num_rows = 1000
+    num_rows = df.shape[0]
 
 mbc_flag = console.input("\nUse mbc? [Y/n]: ")
 if mbc_flag.lower() == 'n':
