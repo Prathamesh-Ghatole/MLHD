@@ -118,11 +118,12 @@ def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
 <body>
 
 <table cellspacing="1" bgcolor="#000000" cellpadding="5">
-<tr bgcolor="#ffffff"><th>Artist</th><th>Recording</th><th>Canonical MBID</th><th>Canonical Data Lookup</th></tr>
+<tr bgcolor="#ffffff"><th>Artist</th><th>Recording</th><th>Recording MBID</th><th>Canonical MBID</th><th>Canonical Data Lookup</th></tr>
 {% for key,value in df.iterrows() %}
 <tr bgcolor="#ffffff">
 <td>{{value['artist_credit']}}</td>
 <td>{{value['rec_name']}}</td>
+<td><a href="https://musicbrainz.org/recording/{{value['mlhd_recording_mbid']}}">{{value['mlhd_recording_mbid']}}</a></td>
 <td><a href="https://musicbrainz.org/recording/{{value['mlhd_canonical_mbid']}}">{{value['mlhd_canonical_mbid']}}</a></td>
 <td><a href="https://musicbrainz.org/recording/{{value['received_rec_mbid']}}">{{value['received_rec_mbid']}}</a> (<a href="https://datasets.listenbrainz.org/mbc-lookup?%5Bartist_credit_name%5D={{value['artist_credit']}}&%5Brecording_name%5D={{value['rec_name']}}">lookup</a>)</td>
 </tr>
