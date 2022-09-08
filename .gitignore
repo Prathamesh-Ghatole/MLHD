@@ -1,7 +1,13 @@
 __pycache__/*
-env_mlhd/*
 lib/__pycache__/*
+.vscode
+
+env_mlhd/*
+env/*
+venv/*
+
 test.ipynb
 rec_track_checker/__pycache__/*
 rec_track_checker/
-.vscode
+
+config.py

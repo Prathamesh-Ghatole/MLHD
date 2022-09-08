@@ -1,0 +1,47 @@
+## COPY THIS SAMPLE FILE TO config.py AND EDIT IT TO SUIT YOUR NEEDS
+
+# The root directory for original MLHD data
+MLHD_ROOT = ""
+
+# Root directory for mapper html reports
+HTML_ROOT = "warehouse/html_reports"
+
+### NOTE: Keep the following UNCHANGED for best experience ###
+# The root directory for the processed data
+WRITE_ROOT = "warehouse/processed-outputs"
+
+# Root directory for dumping MusicBrainz tables, pickles, etc.
+MB_ROOT = "warehouse/MB_tables"
+
+# Root directory for random file-path samples
+SAMPLE_ROOT = "warehouse/samples"
+
+# The root directory for writing logs
+LOG_ROOT = "warehouse/logs"
+
+# Write logs every n files
+LOG_EPOCH = 10
+
+### END OF NOTE ###
+
+# MusicBrainz database credentials
+HOST = "localhost"
+DATABASE = "musicbrainz_db"
+USER = "musicbrainz"
+PORT = 5432
+
+# Run this script to generate directories!
+if __name__ == '__main__':
+    
+    # Generating empty folders
+    from os import makedirs
+    makedirs(MB_ROOT, exist_ok=True)
+    makedirs(SAMPLE_ROOT, exist_ok=True)
+    makedirs(LOG_ROOT, exist_ok=True)
+    makedirs(HTML_ROOT, exist_ok=True)
+    if WRITE_ROOT != "":
+        makedirs(WRITE_ROOT, exist_ok=True)
+
+    # Generating Tables
+    from os import system
+    system("python gen_tables.py")
