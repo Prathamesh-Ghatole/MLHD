@@ -6,12 +6,14 @@
 # def get_con(): 
 #     return engine.connect()
 
+from config import HOST, DATABASE, USER, PORT
 from psycopg2 import connect
+
 def get_con():
     conn = connect(
-        host="localhost",
-        database="musicbrainz_db",
-        user="musicbrainz",
-        port=5432)
-
+        host = HOST,
+        database = DATABASE,
+        user = USER,
+        port = PORT
+        )
     return conn

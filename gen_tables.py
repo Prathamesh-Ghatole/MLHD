@@ -5,13 +5,14 @@ from rich.progress import track
 from rich import print
 from rich.console import Console
 
+import config
 console = Console()
 # console.clear()
 
 """Script to fetch and dump essential MB_tables from MusicBrainz DB"""
 
-BASE_PATH = "warehouse/MB_tables/"
-os.makedirs(os.path.dirname(BASE_PATH), exist_ok=True)
+BASE_PATH = config.MB_ROOT
+os.makedirs(BASE_PATH, exist_ok=True)
 
 def gen_table(table_name, table_func, base_path=BASE_PATH):
     """Generate a table from a function and dump it to a file"""
