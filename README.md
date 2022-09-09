@@ -24,6 +24,6 @@ Overall, the goal of this project is to create an updated version of the MLHD in
     - ```   pip install -r requirements.txt   ```
 4. Download the original MLHD dataset from: https://ddmal.music.mcgill.ca/research/The_Music_Listening_Histories_Dataset_(MLHD)/
 5. Copy ```config.py.sample``` to ```config.py``` and update parameters as required. 
-6. Run:
+6. To setup required folders and fetch tables, run:
     - ```python config.py```
-7. Ready to go!
+7. Ready to go

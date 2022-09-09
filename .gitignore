@@ -11,3 +11,8 @@ rec_track_checker/__pycache__/*
 rec_track_checker/
 
 config.py
+
+warehouse/logs
+warehouse/mapper_outputs
+warehouse/MB_tables
+warehouse/processed_outputs
