@@ -24,9 +24,9 @@ def gen_table(table_name, table_func, base_path=BASE_PATH):
         with console.status(f"Generating {table_name}"):
             table = table_func()
         console.log(f"Generated {table_name}")
-        with console.status(f"Writing {table_name} to {base_path+table_name}"):
-            table.to_parquet(base_path+table_name)
-        console.log(f"Wrote {table_name} to {base_path+table_name}")
+        with console.status(f"Writing {table_name} to {os.path.join(base_path, table_name)}"):
+            table.to_parquet(os.path.join(base_path, table_name))
+        console.log(f"Wrote {table_name} to {os.path.join(base_path, table_name)}")
 
 
 tables_func_name = {
