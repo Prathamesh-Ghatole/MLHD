@@ -7,6 +7,7 @@ from jinja2 import Environment, BaseLoader
 from datetime import datetime
 from unidecode import unidecode
 from numpy import nan
+import config
 
 jenv = Environment(loader=BaseLoader)
 requests_cache.install_cache('../warehouse/mlhd_cache', expire_after=86400, allowable_methods=['GET', 'POST'])
@@ -107,7 +108,7 @@ def mapper_mbc(df_input, mbc_table):
 
     return df_input
 
-def write_html(df, base_path='/home/snaek/public_html/', suffix='mbc'):
+def write_html(df, base_path=config.HTML_ROOT, suffix='mbc'):
     template = """
 <!doctype html>
 <html lang="en">
