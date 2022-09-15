@@ -1,7 +1,0 @@
-{
-    "MLHD_ROOT": "/data/mlhd",
-    "WRITE_ROOT": "/home/snaek/MLHD/rec_track_checker/MLHD/",
-    "LOG_WRITE_PATH": "/home/snaek/MLHD/rec_track_checker/log.json",
-    "LOG_EPOCH": 10,
-    "PICKLE_PATH": "/home/snaek/MLHD/rec_track_checker/MB_track_sets.pickle"
-}
