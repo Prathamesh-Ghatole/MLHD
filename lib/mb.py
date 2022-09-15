@@ -90,3 +90,12 @@ def get_mbc_combined(limit=None):
     combined_lookup
     FROM mapping.canonical_musicbrainz_data
     """, limit)
+
+def get_recording_standalone(limit=None):
+    return get_table("""
+    SELECT r.gid
+    FROM recording r
+    left join track t
+    ON r.id = t.recording
+    WHERE t.recording IS NULL;
+    """, limit)
