@@ -1,3 +1,6 @@
+### Takes a set of random file paths and generates a report of the mapping results
+# - Steps involved: Loading -> Cleaning -> Mapping -> Reporting
+
 ### START OF MAIN ###
 import lib.io_ as io
 import lib.mapper_helper as mapper_helper

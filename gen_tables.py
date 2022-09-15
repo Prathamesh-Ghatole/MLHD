@@ -1,3 +1,5 @@
+### Script to fetch and dump essential MB_tables from MusicBrainz DB ###
+
 import lib.mb as mb
 import lib.io_ as io
 import os
@@ -12,7 +14,6 @@ io.generate_folders()
 console = Console()
 # console.clear()
 
-"""Script to fetch and dump essential MB_tables from MusicBrainz DB"""
 
 BASE_PATH = config.MB_ROOT
 os.makedirs(BASE_PATH, exist_ok=True)
