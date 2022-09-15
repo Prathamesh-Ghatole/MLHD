@@ -1,4 +1,5 @@
 import lib.mb as mb
+import lib.io_ as io
 import os
 from time import monotonic
 from rich.progress import track
@@ -6,6 +7,8 @@ from rich import print
 from rich.console import Console
 
 import config
+
+io.generate_folders()
 console = Console()
 # console.clear()
 

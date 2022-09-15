@@ -5,6 +5,7 @@ from rich.progress import track
 from rich import print
 from rich.console import Console
 
+io.generate_folders()
 console = Console()
 console.clear()
 

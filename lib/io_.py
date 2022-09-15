@@ -6,7 +6,7 @@ import lib.mb as mb
 from pyarrow import _csv as csv
 from pyarrow import dataset as dataset
 from numpy import nan
-
+import config
 
 def get_config():
     """Function to load the config file into environment variable"""	
@@ -164,7 +164,7 @@ def write_frame(df_input, original_path):
     
     # print(write_path)
     # Make directory inside WRITE_ROOT if it doesn't exist
-    os.makedirs(os.path.dirname(write_path), exist_ok=True)
+    os.os.makedirs(os.path.dirname(write_path), exist_ok=True)
 
     df_input.to_csv(
         write_path,
@@ -199,7 +199,7 @@ def write_log(log_dict, log_path = ENV['LOG_WRITE_PATH']):
     
     """Function to update log (json) file"""
     # Make directory inside WRITE_ROOT if it doesn't exist
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    os.os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
     with open(log_path, 'w') as f:
         json.dump(log_dict, f)
@@ -266,3 +266,12 @@ def replace_multi(value, lookup_df):
         return tuple(replace(value, lookup_df, col_name) for col_name in lookup_df.columns)
     except KeyError:
         return tuple(None for col_name in lookup_df.columns)
+
+def generate_folders():
+    
+    os.makedirs(config.MB_ROOT, exist_ok=True)
+    os.makedirs(config.SAMPLE_ROOT, exist_ok=True)
+    os.makedirs(config.LOG_ROOT, exist_ok=True)
+    os.makedirs(config.HTML_ROOT, exist_ok=True)
+    if config.WRITE_ROOT != "":
+        os.makedirs(config.WRITE_ROOT, exist_ok=True)
