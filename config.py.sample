@@ -17,7 +17,7 @@ MB_ROOT = "warehouse/MB_tables"
 SAMPLE_ROOT = "warehouse/samples"
 
 # The root directory for writing logs
-LOG_ROOT = "warehouse/logs"
+LOG_WRITE_PATH = "warehouse/logs"
 
 # Write logs every n files
 LOG_EPOCH = 10

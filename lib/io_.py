@@ -8,14 +8,15 @@ from pyarrow import dataset as dataset
 from numpy import nan
 import config
 
-def get_config():
-    """Function to load the config file into environment variable"""	
-    with open('config.json', 'r') as f:
-        ENV_VAR = json.load(f)
+# def get_config():
+#     """Function to load the config file into environment variable"""	
+#     with open('config.json', 'r') as f:
+#         ENV_VAR = json.load(f)
     
-    return ENV_VAR
+#     return ENV_VAR
 
-ENV = get_config()
+# ENV = get_config()
+ENV = {name: values for name, values in vars(config).items() if not name.startswith("__")}
 
 
 def generate_paths(MLHD_ROOT):
