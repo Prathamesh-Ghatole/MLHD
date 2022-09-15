@@ -22,6 +22,10 @@ LOG_WRITE_PATH = "warehouse/logs"
 # Write logs every n files
 LOG_EPOCH = 10
 
+# The root directory for mapper outputs
+
+MAPPER_OUTPUT_ROOT = "warehouse/mapper_outputs"
+
 ### END OF NOTE ###
 
 # MusicBrainz database credentials
@@ -39,6 +43,7 @@ if __name__ == '__main__':
     makedirs(SAMPLE_ROOT, exist_ok=True)
     makedirs(LOG_WRITE_PATH, exist_ok=True)
     makedirs(HTML_ROOT, exist_ok=True)
+    makedirs(MAPPER_OUTPUT_ROOT, exist_ok=True)
     if WRITE_ROOT != "":
         makedirs(WRITE_ROOT, exist_ok=True)
 

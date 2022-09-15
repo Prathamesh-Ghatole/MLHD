@@ -274,5 +274,7 @@ def generate_folders():
     os.makedirs(config.SAMPLE_ROOT, exist_ok=True)
     os.makedirs(config.LOG_WRITE_PATH, exist_ok=True)
     os.makedirs(config.HTML_ROOT, exist_ok=True)
+    os.makedirs(config.MAPPER_OUTPUT_ROOT, exist_ok=True)
+
     if config.WRITE_ROOT != "":
         os.makedirs(config.WRITE_ROOT, exist_ok=True)
