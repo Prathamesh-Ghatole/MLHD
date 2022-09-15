@@ -7,6 +7,7 @@ from time import monotonic
 from rich import print
 from rich.console import Console
 
+io.generate_folders()
 console = Console()
 console.clear()
 
