@@ -16,3 +16,4 @@ warehouse/logs
 warehouse/mapper_outputs
 warehouse/MB_tables
 warehouse/processed_outputs
+warehouse/html_reports

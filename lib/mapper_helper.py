@@ -8,6 +8,7 @@ from datetime import datetime
 from unidecode import unidecode
 from numpy import nan
 import config
+from os.path import join
 
 jenv = Environment(loader=BaseLoader)
 requests_cache.install_cache('../warehouse/mlhd_cache', expire_after=86400, allowable_methods=['GET', 'POST'])
@@ -139,10 +140,10 @@ def write_html(df, base_path=config.HTML_ROOT, suffix='mbc'):
     different = df[df.mlhd_canonical_mbid!=df.received_rec_mbid]
     report_html = jtemplate.render(df=different)
     
-    with open(base_path+f_name, "w", encoding="utf-8") as fp:
+    path = join(base_path, f_name)
+    with open(path, "w", encoding="utf-8") as fp:
         fp.write(report_html)
 
-    # path = base_path+f_name
     url = "https://wolf.metabrainz.org/~snaek/{}".format(f_name)
     
     return (url)
