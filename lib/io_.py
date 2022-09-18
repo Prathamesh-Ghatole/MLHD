@@ -16,7 +16,12 @@ import config
 #     return ENV_VAR
 
 # ENV = get_config()
-ENV = {name: values for name, values in vars(config).items() if not name.startswith("__")}
+
+def get_config():
+    ENV = {name: values for name, values in vars(config).items() if not name.startswith("__")}
+    return ENV
+
+ENV = get_config()
 
 
 def generate_paths(MLHD_ROOT):
