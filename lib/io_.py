@@ -5,6 +5,8 @@ import pickle
 import lib.mb as mb
 from pyarrow import _csv as csv
 from pyarrow import dataset as dataset
+from pyarrow import Table as Table
+from pyarrow import CompressedOutputStream as COS
 from numpy import nan
 import config
 
@@ -160,17 +162,41 @@ def load_path_file(paths, how_many = None, drop_subset = None):
 #     df = df.to_pandas()
 #     return df
 
+write_options  = csv.WriteOptions(
+    include_header = False,
+    delimiter = '\t',
+)
+
 def write_frame(df_input, original_path):
     """
-    Function to write a dataframe to a csv file
+    Function to write a dataframe to a csv file using pyarrow
     """
     # Replace MLHD_ROOT with path to new MLHD folder.
-    write_path = original_path.replace(ENV["MLHD_ROOT"]+'/', ENV["WRITE_ROOT"])
+    write_path = original_path.replace(ENV["MLHD_ROOT"], ENV["WRITE_ROOT"])
     write_path = write_path.replace('txt.gz', 'csv.zst')
     
     # print(write_path)
     # Make directory inside WRITE_ROOT if it doesn't exist
-    os.os.makedirs(os.path.dirname(write_path), exist_ok=True)
+    os.makedirs(os.path.dirname(write_path), exist_ok=True)
+    
+    df_input = Table.from_pandas(df_input)
+    # csv.write_csv(df_input, output_file = write_path, write_options = )
+    with COS(write_path, "zstd") as out:
+        csv.write_csv(df_input, out, write_options = write_options)
+
+    df_input
+
+def write_frame_pandas(df_input, original_path):
+    """
+    Function to write a dataframe to a csv file
+    """
+    # Replace MLHD_ROOT with path to new MLHD folder.
+    write_path = original_path.replace(ENV["MLHD_ROOT"], ENV["WRITE_ROOT"])
+    write_path = write_path.replace('txt.gz', 'csv.zst')
+    
+    # print(write_path)
+    # Make directory inside WRITE_ROOT if it doesn't exist
+    os.makedirs(os.path.dirname(write_path), exist_ok=True)
 
     df_input.to_csv(
         write_path,
