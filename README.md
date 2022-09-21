@@ -28,7 +28,29 @@ Overall, the goal of this project is to create an updated version of the MLHD in
 7. Ready to go!
 
 ## 3. **Usage**
-_To be updated soon._
+### Processing Tools:
+- ```clean_master.py``` - Cleans the dataset.
+- ```rec_track_checker.py``` - Loops through the datasets and checks if any artist_mbid is present in the recording_mbid column and converts every file from CSV+GZIP to CSV+ZSTD.
+
+### Utility Tools:
+- ```gen_tables.py``` - Generates the required tables for the dataset.
+- ```config.py``` - Configuration file for the project. (Can also be run as a script to setup the project incase the scripts don't cover it already.)
+- ```lib/gen_test_paths.py``` - Utility to generate a random set of paths for testing.
+    - usage: ```python lib/gen_test_paths.py <num_paths> <output_path>```
+- ```mapper_gen_names.py``` - Utility for cleaning mlhd_recording_mbid, and fetches (rec_name, artist_credit) for given set of files.
+
+### Experimentation Tools:
+- ```mapper.py``` - Takes a set of random file paths and generates a report of the mapping results. (Useful for testing the MBC mapper.)
+- ```test_arrow_vsd_pandas.ipynb``` - Tests the performance of the arrow library vs pandas for reading the dataset.
+- ```test_csv_parser.ipynb``` - Experimental notebook for testing custom vectorized CSV parsers in Python.
+- ```test_file_type_io_testing.ipynb``` - Tests <readtime, writetime, and filesize> for <CSV+GZIP, CSV+ZSTD, and Parquet+ZSTD, Parquet+Snappy> files.
+- ```test_file_type_io_testing_sql.ipynb``` - Tests <readtime, writetime, and filesize> for SQL tables dumped as <Snappy+Parquet, ZSTD+Parquet, and ZSTD10+Parquet> files.
+- ```test_mapper.py``` - An experimental notebook to test different mappers.
+- ```test_MLHD_conflation_mapping.ipynb``` - A predecessor to ```mapper.py```. Uses the [MBID-Mapping API](https://labs.api.listenbrainz.org/mbid-mapping/json) to check if a recording_mbid corresponds to a given artist_mbid. Similar to mapper.py, but uses the API instead of the local database.
+- ```test_MLHD_conflation.ipynb``` - A predecessor to ```mapper.py```. Cleans recording_mbids, and fetches artist name and artist credit for cleaned recording_mbids.
+- ```test_MLHD_old.ipynb``` - Legacy notebook for testing the original MLHD dataset. Surveys a lot of the issues with the dataset.
+- ```test_rec_track_checker.ipynb``` - Experimental notebook for testing the ```rec_track_checker.py``` script.
+- ```test_write_arrow.ipynb``` - Compares the performance of writing CSV+ZSTD files using the arrow library and pd.to_csv() functions.
 
 # Resources
 This project has been pretty fun to work on, and I've learned a lot along the way. 
