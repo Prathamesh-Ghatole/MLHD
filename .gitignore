@@ -1,6 +1,7 @@
 __pycache__/*
 lib/__pycache__/*
 .vscode
+dask-worker-space
 
 env_mlhd/*
 env/*
