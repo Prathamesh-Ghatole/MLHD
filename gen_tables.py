@@ -35,6 +35,7 @@ def gen_table(table_name, table_func, base_path=BASE_PATH):
 
 tables_func_name = {
     "artist_credit.parquet": mb.get_artist_credit,
+    "artist_credit_gid.parquet": mb.get_artist_credit_gid,
     "artist_name.parquet": mb.get_artist_name,
     "artist_redirects.parquet": mb.get_artist_redirects,
     "recording_canonical.parquet": mb.get_recording_canonical,

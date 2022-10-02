@@ -84,6 +84,13 @@ def get_artist_credit(limit=None):
     from recording join artist_credit ac 
     on ac.id=artist_credit;""", limit)
 
+def get_artist_credit_gid(limit=None): 
+    return get_table("""
+    select recording.gid as rec_gid,
+    ac.gid as artist_credit_gid
+    from recording join artist_credit ac 
+    on ac.id=artist_credit;""", limit)
+
 def get_mbc_combined(limit=None):
     return get_table("""
     SELECT recording_mbid,
