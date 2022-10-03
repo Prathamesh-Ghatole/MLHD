@@ -86,7 +86,7 @@ def get_artist_credit(limit=None):
 
 def get_artist_credit_release_gid(limit=None): 
     return get_table("""
-    SELECT artist_mbids, release_mbid, recording_mbid 
+    SELECT recording_mbid artist_mbids, release_mbid 
     FROM mapping.canonical_musicbrainz_data;""", limit)
 
 def get_mbc_combined(limit=None):
