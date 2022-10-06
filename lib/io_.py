@@ -209,29 +209,29 @@ def write_frame_pandas(df_input, original_path):
     return write_path
 
 
-def log_output(Series_to_log, path, time_taken, timestamp, master_log_dict):
+def log_output(stuff_to_log, path, time_taken, timestamp, master_log_dict):
     """
     Function to log output series and path
     """
     # If keys not in dict, generate empty list with dict
-    key_set = {'path', 'logs', 'time_taken', 'timestamp'}
+    key_set = {'path', 'log_value', 'time_taken', 'timestamp'}
     
     for key in key_set:
         if key not in master_log_dict.keys():
             master_log_dict[key]=[] 
     
     master_log_dict['path'].append(path)
-    master_log_dict['logs'].append(Series_to_log)
+    master_log_dict['log_value'].append(stuff_to_log)
     master_log_dict['time_taken'].append(time_taken)
     master_log_dict['timestamp'].append(timestamp)
         
     return master_log_dict
 
-def write_log(log_dict, log_path = ENV['LOG_WRITE_PATH']):
+def write_log(log_dict, log_path):
     
     """Function to update log (json) file"""
     # Make directory inside WRITE_ROOT if it doesn't exist
-    os.os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
     with open(log_path, 'w') as f:
         json.dump(log_dict, f)
@@ -303,7 +303,7 @@ def generate_folders():
     
     os.makedirs(config.MB_ROOT, exist_ok=True)
     os.makedirs(config.SAMPLE_ROOT, exist_ok=True)
-    os.makedirs(config.LOG_WRITE_PATH, exist_ok=True)
+    os.makedirs(config.LOG_WRITE_ROOT, exist_ok=True)
     os.makedirs(config.HTML_ROOT, exist_ok=True)
     os.makedirs(config.MAPPER_OUTPUT_ROOT, exist_ok=True)
 
