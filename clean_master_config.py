@@ -1,5 +1,8 @@
 # Settings for the clean_master.py script
 
+# Maximum number of workers for concurrent.futures.ThreadPoolExecutor
+MAX_WORKERS = 5
+
 # When TRUE -> Keep missing values in the data. (maintains the original structure/shape of MLHD)
 KEEP_MISSING = True
 

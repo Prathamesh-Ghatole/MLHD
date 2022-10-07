@@ -11,6 +11,7 @@ from rich.progress import track
 from os.path import join
 from numpy import nan
 import pandas as pd
+import concurrent.futures
 
 import config
 import clean_master_config as cmc
@@ -161,13 +162,32 @@ def driver(
 ### Running the driver function ###
 ####
 
+start_process = monotonic()
+
+# with concurrent.futures.ThreadPoolExecutor(max_workers=cmc.MAX_WORKERS) as executor:
+#     executor.map(driver, MLHD_PATHS[:10])
+
+# with concurrent.futures.ProcessPoolExecutor(max_workers=cmc.MAX_WORKERS) as executor:
+#     executor.map(driver, MLHD_PATHS[:10])
+
 driver(MLHD_PATHS[:10])
 
+end_process = monotonic()
 ####
 ### Outro ###
 ####
 
-master_end = monotonic()                            #End the master timer
-master_time = round(master_end - master_start, 2)   #Calculate the master time
+master_end = monotonic()                                #End the master timer
+process_time = round(start_process - end_process, 2)    #Calculate the time taken to process the data
+master_time = round(master_end - master_start, 2)       #Calculate the master time
+
+master_log = {
+    "Master time": master_time,
+    "Process time": process_time,
+    "Log_Path": LOG_WRITE_PATH
+    }
+
+io.write_log(master_log, LOG_WRITE_PATH.replace('.json', '_master.json'))            #Write the master log
+
 console.log(f"Finished Process in {master_time} seconds")
 console.log(f"Output log written to {LOG_WRITE_PATH}")
