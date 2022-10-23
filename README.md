@@ -117,6 +117,13 @@ I've compiled all my learnings, and resources that I used throughout this projec
 - https://stackoverflow.com/questions/9759820/how-to-get-a-list-of-variables-in-specific-python-module
 - http://shvbsle.in/computers-are-fast-but-you-dont-know-it-p1/
 - https://pandas.pydata.org/docs/user_guide/enhancingperf.html
+- https://stackoverflow.com/questions/14991710/is-concurrent-futures-a-medicine-of-the-gil 
+- https://superfastpython.com/threadpoolexecutor-vs-gil/ 
+- https://pnavaro.github.io/big-data/14-FileFormats.html 
+- https://medium.com/@rbmsingh/to-hdf-or-not-is-the-question-e56b684092b7 
+- https://www.microsoft.com/en-us/research/publication/columnar-storage-formats/
+- https://www.orchest.io/blog/the-great-python-dataframe-showdown-part-1-demystifying-apache-arrow
+
 
 ## **Books**
 - [Fast Python High performance techniques for large datasets](https://www.manning.com/books/fast-python)
