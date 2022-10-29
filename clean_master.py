@@ -48,27 +48,27 @@ def load_data():
     TIME_LOGS["MB_start"] = monotonic()
 
     console.log("loading recording gids...")
-    MB_rec_gid = pd.read_parquet("warehouse/MB_tables/recording_gid.parquet")
+    MB_rec_gid = pd.read_parquet(join(config.MB_ROOT, "recording_gid.parquet"))
     MB_rec_gid.set_index("gid", inplace=True)
     DATA["MB_rec_gid"] = MB_rec_gid
 
     console.log("loading recording redirects...")
     MB_rec_redirects = pd.read_parquet(
-        "warehouse/MB_tables/recording_redirects.parquet"
+        join(config.MB_ROOT, "recording_redirects.parquet")
     )
     MB_rec_redirects.set_index("old", inplace=True)
     DATA["MB_rec_redirects"] = MB_rec_redirects
 
     console.log("loading recording canonical MBIDs...")
     MB_rec_canonical = pd.read_parquet(
-        "warehouse/MB_tables/recording_canonical.parquet"
+        join(config.MB_ROOT, "recording_canonical.parquet")
     )
     MB_rec_canonical.set_index("old", inplace=True)
     DATA["MB_rec_canonical"] = MB_rec_canonical
 
     console.log("loading artist credit gids...")
     MB_artist_credit_list = pd.read_parquet(
-        "warehouse/MB_tables/artist_credit_release_gid.parquet"
+        join(config.MB_ROOT, "artist_credit_release_gid.parquet")
     )
     MB_artist_credit_list.set_index("recording_mbid", inplace=True)
     MB_artist_credit_list["artist_mbids"] = MB_artist_credit_list.artist_mbids.map(

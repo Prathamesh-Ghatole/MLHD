@@ -48,5 +48,5 @@ if __name__ == '__main__':
         makedirs(WRITE_ROOT, exist_ok=True)
 
     # Generating Tables
-    from os import system
-    system("python gen_tables.py")
+    import gen_tables
+    gen_tables.generate_tables()
