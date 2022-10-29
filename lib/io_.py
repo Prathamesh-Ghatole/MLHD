@@ -16,7 +16,7 @@ def generate_paths(MLHD_ROOT):
     """Function to generate a list of paths to MLHD files"""
     MLHD_FILES = []
 
-    for root, dirs, files in os.walk(MLHD_ROOT):
+    for root, _, files in os.walk(MLHD_ROOT):
         for file in files:
             if file.endswith(".gz") or file.endswith(".zst"):
                 MLHD_FILES.append(os.path.join(root, file))
@@ -276,7 +276,8 @@ def check_rec(df, MB_track_set, MB_track_redir_set):
 
 
 def replace(value, lookup_df, col_name):
-    """Apply or map this function on a pandas series to fetch values from a lookup_df column with input value as index key
+    """Apply or map this function on a pandas series to fetch values from a lookup_df column
+    with input value as index key
 
     Keyword arguments:
     value       : Value to search in lookup_df's index
