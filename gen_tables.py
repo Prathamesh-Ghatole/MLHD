@@ -18,17 +18,20 @@ console = Console()
 BASE_PATH = config.MB_ROOT
 os.makedirs(BASE_PATH, exist_ok=True)
 
+
 def gen_table(table_name, table_func, base_path=BASE_PATH):
     """Generate a table from a function and dump it to a file"""
-    
+
     if (table_name) in os.listdir(base_path):
         console.log(f"{table_name} already exists, skipping")
-        
+
     else:
         with console.status(f"Generating {table_name}"):
             table = table_func()
         console.log(f"Generated {table_name}")
-        with console.status(f"Writing {table_name} to {os.path.join(base_path, table_name)}"):
+        with console.status(
+            f"Writing {table_name} to {os.path.join(base_path, table_name)}"
+        ):
             table.to_parquet(os.path.join(base_path, table_name))
         console.log(f"Wrote {table_name} to {os.path.join(base_path, table_name)}")
 
@@ -46,10 +49,11 @@ tables_func_name = {
     "canonical_recording_redirects.parquet": mb.get_canonical_recording_redirect,
     "track_name.parquet": mb.get_track_name,
     "track_redirects.parquet": mb.get_track_redirects,
-    "mbc_combined.parquet": mb.get_mbc_combined
+    "mbc_combined.parquet": mb.get_mbc_combined,
 }
 
-if __name__ == '__main__':
+
+def generate_tables():
     start = monotonic()
     for table_name, table_func in tables_func_name.items():
         gen_table(table_name, table_func)
@@ -57,3 +61,7 @@ if __name__ == '__main__':
     end = monotonic()
 
     console.log(f"Tables generated in {round(end-start, 2)} seconds")
+
+
+if __name__ == "__main__":
+    generate_tables()
