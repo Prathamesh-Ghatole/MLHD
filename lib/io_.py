@@ -208,42 +208,39 @@ def write_frame_pandas(df_input, original_path):
     return write_path
 
 
-def log_output(stuff_to_log, path, time_taken, timestamp, master_log_dict):
+def log_output(values_to_log: list, master_log_dict: dict) -> str:
     """
     Function to log output series and path
+    values_to_log (list): list of values to log <path, log_value, time_taken, timestamp>
     """
     # If keys not in dict, generate empty list with dict
-    key_set = {"path", "log_value", "time_taken", "timestamp"}
+    key_set = ["path", "log_value", "time_taken", "timestamp"]
 
     for key in key_set:
-        if key not in master_log_dict.keys():
+        if key not in master_log_dict:
             master_log_dict[key] = []
 
-    master_log_dict["path"].append(path)
-    master_log_dict["log_value"].append(stuff_to_log)
-    master_log_dict["time_taken"].append(time_taken)
-    master_log_dict["timestamp"].append(timestamp)
+    for value in values_to_log:
+        for key, value in zip(key_set, values_to_log):
+            master_log_dict[key].append(value)
 
-    return master_log_dict
+    # master_log_dict["path"].append(path)
+    # master_log_dict["log_value"].append(log_value)
+    # master_log_dict["time_taken"].append(time_taken)
+    # master_log_dict["timestamp"].append(timestamp)
+    log_str = ",".join([str(item) for item in values_to_log]) + "\n"
+
+    return log_str
 
 
-def write_log(log_dict, log_path):
+def write_log(log_str: str, log_path: str) -> str:
 
     """Function to update log (json) file"""
     # Make directory inside WRITE_ROOT if it doesn't exist
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    # with open(log_path, "w") as f:
-    # json.dump(log_dict, f)
-    # for items in log_dict.values():
-    try:
-        string_to_append = (
-            ",".join([str(item[-1]) for item in log_dict.values()]) + "\n"
-        )
-        with open(log_path, "a") as f:
-            f.write(string_to_append)
-    except TypeError:
-        pass
+    with open(log_path, "a") as f:
+        f.write(log_str)
 
     return log_path
 
