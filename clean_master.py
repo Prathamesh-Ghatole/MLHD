@@ -1,6 +1,7 @@
 # A master script to clean and export MLHD data!
 
 from os.path import join
+from os.path import splitext
 from time import monotonic
 import pandas as pd
 from numpy import nan
@@ -36,13 +37,17 @@ console.log("Loading config...")
 console.log("Generating MLHD Paths...")
 MLHD_PATHS = io.generate_paths(config.MLHD_ROOT)
 LOG_WRITE_PATH = join(config.LOG_WRITE_ROOT, clean_master_config.LOG_FILE_NAME)
+MASTER_LOG_WRITE_PATH = join(
+    config.LOG_WRITE_ROOT,
+    splitext(clean_master_config.LOG_FILE_NAME)[0] + "_MASTER.csv",
+)
 
 ####
 ### LOADING MB TABLES ###
 ####
 
 
-def load_data():
+def load_data() -> dict:
     DATA = {}
 
     TIME_LOGS["MB_start"] = monotonic()
@@ -98,10 +103,10 @@ DATA = load_data()
 
 # Main function to process dataframe
 def process_df(
-    df_input,
-    keep_missing=clean_master_config.KEEP_MISSING,
-    turn_blank=clean_master_config.TURN_BLANK,
-):
+    df_input: pd.DataFrame,
+    keep_missing: bool = clean_master_config.KEEP_MISSING,
+    turn_blank: bool = clean_master_config.TURN_BLANK,
+) -> pd.DataFrame:
     """Take an input df and process it into a cleaned df
 
     Args:
@@ -146,12 +151,11 @@ def process_df(
 
 # Driver function to read, clean, and write all the file_paths in the path_list, while logging their details
 def driver(
-    path_list,
-    keep_missing=clean_master_config.KEEP_MISSING,
-    turn_blank=clean_master_config.TURN_BLANK,
-    write_root=config.WRITE_ROOT,
-    reset_log_before_run=clean_master_config.RESET_LOG_BEFORE_RUN,
-):
+    path_list: list,
+    keep_missing: bool = clean_master_config.KEEP_MISSING,
+    turn_blank: bool = clean_master_config.TURN_BLANK,
+    reset_log_before_run: bool = clean_master_config.RESET_LOG_BEFORE_RUN,
+) -> None:
 
     """Driver function to read, clean, and write all the file_paths in the path_list, while logging their details
 
@@ -164,9 +168,11 @@ def driver(
         list: List of cleaned dataframes
     """
     console.log("Looping through MLHD files...")
+
     if reset_log_before_run:
         with open(LOG_WRITE_PATH, "w") as f:
-            f.write("")
+            f.write("path,log_value,time_taken,timestamp\n")
+
     file_counter = 0
     start_loop = monotonic()
     for path in track(path_list):
@@ -184,11 +190,13 @@ def driver(
 
         # Logging the table
         file_counter += 1
-        io.log_output(df.shape[0], path, time_taken, monotonic(), OUTPUT_LOG)
+        log_str = io.log_output(
+            [path, df.shape[0], time_taken, monotonic()], OUTPUT_LOG
+        )
 
         if file_counter % config.LOG_EPOCH == 0:
-            # Write log as a CSV file with columns <time_taken, timestamp, log_value, path>
-            _ = io.write_log(OUTPUT_LOG, LOG_WRITE_PATH)
+            # Write log as a CSV file with columns <path, log_value, time_taken, timestamp>
+            _ = io.write_log(log_str, LOG_WRITE_PATH)
 
     end_loop = monotonic()
     loop_time = round(end_loop - start_loop, 2)
@@ -197,12 +205,27 @@ def driver(
     return None
 
 
+def write_master_log(
+    stuff_to_log: list,
+    write_path: str,
+    reset_log_before_run: bool = clean_master_config.RESET_LOG_BEFORE_RUN,
+) -> None:
+
+    if clean_master_config.RESET_LOG_BEFORE_RUN:
+        with open(MASTER_LOG_WRITE_PATH, "w") as f:
+            f.write("master_time,process_time\n")
+
+    log_str = ",".join([str(item) for item in stuff_to_log]) + "\n"
+
+    io.write_log(log_str, MASTER_LOG_WRITE_PATH)
+
+
 ####
 ### Running the driver function ###
 ####
 
 
-def main():
+def main() -> None:
     start_process = monotonic()
 
     if type(clean_master_config.HOW_MANY) is int:
@@ -221,15 +244,7 @@ def main():
     )  # Calculate the time taken to process the data
     master_time = round(master_end - master_start, 2)  # Calculate the master time
 
-    master_log = {
-        "Master time": master_time,
-        "Process time": process_time,
-        "Log_Path": LOG_WRITE_PATH,
-    }
-
-    io.write_log(
-        master_log, LOG_WRITE_PATH.replace(".json", "_master.json")
-    )  # Write the master log
+    write_master_log([master_time, process_time], MASTER_LOG_WRITE_PATH)
 
     console.log(f"Finished Process in {master_time} seconds")
     console.log(f"Output log written to {LOG_WRITE_PATH}")
