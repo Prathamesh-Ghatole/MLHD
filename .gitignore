@@ -12,6 +12,7 @@ rec_track_checker/__pycache__/*
 rec_track_checker/
 
 config.py
+clean_master_config.py
 
 warehouse/logs
 warehouse/mapper_outputs
