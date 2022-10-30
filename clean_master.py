@@ -150,6 +150,7 @@ def driver(
     keep_missing=clean_master_config.KEEP_MISSING,
     turn_blank=clean_master_config.TURN_BLANK,
     write_root=config.WRITE_ROOT,
+    reset_log_before_run=clean_master_config.RESET_LOG_BEFORE_RUN,
 ):
 
     """Driver function to read, clean, and write all the file_paths in the path_list, while logging their details
@@ -163,6 +164,9 @@ def driver(
         list: List of cleaned dataframes
     """
     console.log("Looping through MLHD files...")
+    if reset_log_before_run:
+        with open(LOG_WRITE_PATH, "w") as f:
+            f.write("")
     file_counter = 0
     start_loop = monotonic()
     for path in track(path_list):
@@ -183,6 +187,7 @@ def driver(
         io.log_output(df.shape[0], path, time_taken, monotonic(), OUTPUT_LOG)
 
         if file_counter % config.LOG_EPOCH == 0:
+            # Write log as a CSV file with columns <time_taken, timestamp, log_value, path>
             _ = io.write_log(OUTPUT_LOG, LOG_WRITE_PATH)
 
     end_loop = monotonic()
@@ -200,7 +205,10 @@ def driver(
 def main():
     start_process = monotonic()
 
-    driver(MLHD_PATHS[:30])
+    if type(clean_master_config.HOW_MANY) is int:
+        driver(MLHD_PATHS[: clean_master_config.HOW_MANY])
+    else:
+        driver(MLHD_PATHS)
 
     end_process = monotonic()
     ####
