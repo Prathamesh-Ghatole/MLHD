@@ -1,6 +1,9 @@
-import lib.postgres_conn as pg
-import pandas as pd
 from warnings import simplefilter
+
+import pandas as pd
+
+import lib.postgres_conn as pg
+
 simplefilter(action='ignore', category=UserWarning)
 
 def get_table(query, limit=None):
@@ -10,8 +13,8 @@ def get_table(query, limit=None):
                 df = pd.read_sql(query, con=conn)
             else:
                 df = pd.read_sql(query + " LIMIT {}".format(limit), con=conn)
-        except:
-            raise ValueError("Enter valid limit or recheck query")
+        except Exception as exc:
+            raise ValueError("Enter valid limit or recheck query") from exc
         
     return df
 
