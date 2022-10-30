@@ -1,4 +1,3 @@
-import json
 import os
 import pickle
 
@@ -20,7 +19,7 @@ def generate_paths(MLHD_ROOT):
         for file in files:
             if file.endswith(".gz") or file.endswith(".zst"):
                 MLHD_FILES.append(os.path.join(root, file))
-
+    MLHD_FILES.sort()
     return MLHD_FILES
 
 
@@ -171,8 +170,10 @@ def write_frame(df_input, original_path):
     Function to write a dataframe to a csv file using pyarrow
     """
     # Replace MLHD_ROOT with path to new MLHD folder.
-    write_path = original_path.replace(config.MLHD_ROOT, config.WRITE_ROOT)
-    write_path = write_path.replace("txt.gz", "csv.zst")
+
+    write_path = original_path.replace("csv.zst", "txt.zst")
+    write_path = write_path.replace(config.MLHD_ROOT, "")
+    write_path = os.path.join(config.WRITE_ROOT, write_path)
 
     # print(write_path)
     # Make directory inside WRITE_ROOT if it doesn't exist
@@ -232,8 +233,18 @@ def write_log(log_dict, log_path):
     # Make directory inside WRITE_ROOT if it doesn't exist
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    with open(log_path, "w") as f:
-        json.dump(log_dict, f)
+    # with open(log_path, "w") as f:
+    # json.dump(log_dict, f)
+    # for items in log_dict.values():
+    try:
+        string_to_append = (
+            ",".join([str(item[-1]) for item in log_dict.values()]) + "\n"
+        )
+        with open(log_path, "a") as f:
+            f.write(string_to_append)
+    except TypeError:
+        pass
+
     return log_path
 
 
