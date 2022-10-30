@@ -1,7 +1,7 @@
 # Settings for the clean_master.py script
 
 # Total mumber of files to clean (use for debugging). Set to None to process all.
-HOW_MANY = 30
+HOW_MANY = 15
 
 # Maximum number of workers for concurrent.futures.ThreadPoolExecutor
 MAX_WORKERS = 5
