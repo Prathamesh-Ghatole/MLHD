@@ -1,5 +1,7 @@
 ## COPY THIS SAMPLE FILE TO config.py AND EDIT IT TO SUIT YOUR NEEDS
 
+# NOTE: MAKE SURE TO INCLUDE A TRAILING "/" IN PATH STRING TO INDICATE FOLDER.
+
 # The root directory for original MLHD data
 MLHD_ROOT = ""
 
@@ -18,9 +20,11 @@ SAMPLE_ROOT = "warehouse/samples"
 
 # The root directory for writing logs
 LOG_WRITE_ROOT = "warehouse/logs"
+# For backwards compatibility
+PICKLE_PATH = "warehouse/MB_tables/"
 
 # Write log to disk every n files
-LOG_EPOCH = 10
+LOG_EPOCH = 1
 
 # The root directory for mapper outputs
 
@@ -35,13 +39,13 @@ USER = "musicbrainz"
 PORT = 5432
 
 # Run this script to generate directories!
-if __name__ == '__main__':
-    
+if __name__ == "__main__":
     # Generating empty folders
     from os import makedirs
+    
     makedirs(MB_ROOT, exist_ok=True)
     makedirs(SAMPLE_ROOT, exist_ok=True)
-    makedirs(LOG_WRITE_PATH, exist_ok=True)
+    makedirs(LOG_WRITE_ROOT, exist_ok=True)
     makedirs(HTML_ROOT, exist_ok=True)
     makedirs(MAPPER_OUTPUT_ROOT, exist_ok=True)
     if WRITE_ROOT != "":
