@@ -4,6 +4,7 @@ import pickle
 import config
 import pandas as pd
 from numpy import nan
+import pyarrow as pa
 from pyarrow import CompressedOutputStream as COS
 from pyarrow import Table as Table
 from pyarrow import _csv as csv
@@ -172,32 +173,39 @@ def write_frame(df_input, original_path):
     # Replace MLHD_ROOT with path to new MLHD folder.
 
     write_path = original_path.replace("csv.zst", "txt.zst")
-    write_path = write_path.replace(config.MLHD_ROOT, "")
     write_path = os.path.join(config.WRITE_ROOT, write_path)
 
-    # print(write_path)
+    print(write_path)
     # Make directory inside WRITE_ROOT if it doesn't exist
     os.makedirs(os.path.dirname(write_path), exist_ok=True)
 
-    df_input = Table.from_pandas(df_input)
+    schema = pa.schema(
+        [
+            pa.field('timestamp', pa.string()),
+            pa.field('artist_mbids', pa.string()),
+            pa.field('recording_mbid', pa.string()),
+            pa.field('recording_mbid', pa.string())
+        ]
+    )
+
+    df_input = Table.from_pylist(df_input, schema=schema)
     # csv.write_csv(df_input, output_file = write_path, write_options = )
     with COS(write_path, "zstd") as out:
         csv.write_csv(df_input, out, write_options=write_options)
 
 
-def write_frame_pandas(df_input, original_path):
+def write_frame_pandas(dict_input, root, path):
     """
     Function to write a dataframe to a csv file
     """
-    # Replace MLHD_ROOT with path to new MLHD folder.
-    write_path = original_path.replace(config.MLHD_ROOT, config.WRITE_ROOT)
-    write_path = write_path.replace("txt.gz", "csv.zst")
+    write_path = os.path.join(root, path)
 
     # print(write_path)
     # Make directory inside WRITE_ROOT if it doesn't exist
     os.makedirs(os.path.dirname(write_path), exist_ok=True)
 
-    df_input.to_csv(
+    df = pd.DataFrame(dict_input, columns=["timestamp", "artist_mbids", "release_mbid", "recording_mbid"])
+    df.to_csv(
         write_path,
         index=False,
         sep="\t",
@@ -297,6 +305,12 @@ def replace(value, lookup_df, col_name):
         return lookup_df.at[value, col_name]
     except KeyError:
         return nan
+
+def get(lookup_df, col_name, value):
+    try:
+        return lookup_df.at[value, col_name]
+    except KeyError:
+        return None
 
 
 def replace_multi(value, lookup_df):

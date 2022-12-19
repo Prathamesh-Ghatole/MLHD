@@ -47,6 +47,34 @@ def get_canonical_recording_redirect(limit=None):
     select recording_mbid as old, 
     canonical_recording_mbid, canonical_release_mbid
     from mapping.canonical_recording_redirect""", limit)
+
+### Releases
+def get_release(limit=None):
+    return get_table(
+        '''SELECT r.gid release_mbid
+                , array_agg(a.gid)::text[] as artist_mbids 
+             FROM release r 
+             JOIN artist_credit ac ON r.artist_credit=ac.id
+             JOIN artist_credit_name acn ON ac.id = acn.artist_credit
+             JOIN artist a ON acn.artist=a.id
+        GROUP BY r.gid''', limit)
+
+def get_release_canonical(limit=None):
+    return get_table(
+        '''SELECT release_mbid
+                , canonical_release_mbid
+                , release_group_mbid
+             FROM mapping.canonical_release_redirect ''', limit)
+
+def get_release_redirects(limit=None):
+    return get_table("""
+    select r.gid AS new, 
+    rgr.gid AS old 
+    from release r 
+    join release_gid_redirect rgr 
+    on rgr.new_id = r.id""", limit)
+
+
 ### Artists
 
 def get_artist(limit=None): 
@@ -88,9 +116,11 @@ def get_artist_credit(limit=None):
     on ac.id=artist_credit;""", limit)
 
 def get_artist_credit_release_gid(limit=None): 
+    # pandas knows how to convert a postgres uuid into a str, but doesn't know
+    # how to turn uuid[] into str[], so cast it to text[], which it _does_ know
     return get_table("""
-    SELECT recording_mbid, artist_mbids, release_mbid 
-    FROM mapping.canonical_musicbrainz_data;""", limit)
+    SELECT recording_mbid, artist_mbids::text[], release_mbid 
+    FROM mapping.canonical_musicbrainz_data""", limit)
 
 def get_mbc_combined(limit=None):
     return get_table("""

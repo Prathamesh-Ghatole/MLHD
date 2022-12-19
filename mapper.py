@@ -33,7 +33,7 @@ if flag_cache.lower() == 'n':
     MB_rec_gid.set_index('gid', inplace=True)
 
     console.log('loading recording redirects...')
-    MB_rec_redirects = pd.read_parquet('warehouse/MB_tables/recording_redirects.parquet')
+    MB_rec_redirects = pd.read_parquet('warehouse/MB_tables/recording_gid_redirect.parquet')
     MB_rec_redirects.set_index('old', inplace=True)
 
     console.log('loading recording canonical MBIDs...')
