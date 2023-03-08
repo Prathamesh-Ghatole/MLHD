@@ -3,9 +3,9 @@
 import os
 from os.path import join
 from os.path import splitext
+import pickle
 from time import monotonic
-import pandas as pd
-from numpy import nan
+import logging
 
 # For pretty CLI
 from rich import print
@@ -19,6 +19,8 @@ import config
 from lib import io_ as io
 
 console = Console()
+
+logging.basicConfig(level=logging.INFO)
 
 ####
 ### Getting started ###
@@ -47,68 +49,39 @@ MASTER_LOG_WRITE_PATH = join(
 ####
 
 
+def load_pkl(path):
+    with open(path, "rb") as fp:
+        return pickle.load(fp)
+        
+
 def load_data() -> dict:
     DATA = {}
 
     TIME_LOGS["MB_start"] = monotonic()
 
     console.log("loading recording gids...")
-    MB_rec_gid = pd.read_parquet(join(config.MB_ROOT, "recording_gid.parquet"))
-    MB_rec_gid.set_index("gid", inplace=True)
-    DATA["MB_rec_gid"] = MB_rec_gid
+    DATA["MB_rec_gid"] = load_pkl(join(config.MB_ROOT, "recording_gid.pkl"))
 
     console.log("loading recording redirects...")
-    MB_rec_redirects = pd.read_parquet(
-        join(config.MB_ROOT, "recording_gid_redirect.parquet")
-    )
-    MB_rec_redirects.set_index("old", inplace=True)
-    DATA["MB_rec_redirect"] = MB_rec_redirects
+    DATA["MB_rec_redirect"] = load_pkl(join(config.MB_ROOT, "recording_gid_redirect.pkl"))
 
     console.log("loading recording canonical MBIDs...")
-    MB_rec_canonical = pd.read_parquet(
-        join(config.MB_ROOT, "recording_canonical.parquet")
-    )
-    MB_rec_canonical.set_index("old", inplace=True)
-    DATA["MB_rec_canonical"] = MB_rec_canonical
+    DATA["MB_rec_canonical"] = load_pkl(join(config.MB_ROOT, "recording_canonical.pkl"))
 
     console.log("loading artist credit gids...")
-    MB_artist_credit_list = pd.read_parquet(
-        join(config.MB_ROOT, "artist_credit_release_gid.parquet")
-    )
-    MB_artist_credit_list.set_index("recording_mbid", inplace=True)
-    DATA["MB_artist_credit_list"] = MB_artist_credit_list
+    DATA["MB_artist_credit_list"] = load_pkl(join(config.MB_ROOT, "artist_credit_release_gid.pkl"))
 
     console.log("loading artist redirect...")
-    MB_artist_redirect = pd.read_parquet(
-        join(config.MB_ROOT, "artist_gid_redirect.parquet")
-    )
-    MB_artist_redirect.set_index("old", inplace=True)
-    DATA["MB_artist_redirect"] = MB_artist_redirect
+    DATA["MB_artist_redirect"] = load_pkl(join(config.MB_ROOT, "artist_gid_redirect.pkl"))
 
     console.log("loading release redirect...")
-    MB_release_redirect = pd.read_parquet(
-        join(config.MB_ROOT, "release_gid_redirect.parquet")
-    )
-    MB_release_redirect.set_index("old", inplace=True)
-    DATA["MB_rel_redirect"] = MB_release_redirect
+    DATA["MB_rel_redirect"] = load_pkl(join(config.MB_ROOT, "release_gid_redirect.pkl"))
 
     console.log("loading release canonical...")
-    MB_release_canonical = pd.read_parquet(
-        join(config.MB_ROOT, "release_canonical.parquet")
-    )
-    MB_release_canonical.set_index("release_mbid", inplace=True)
-    DATA["MB_release_canonical"] = MB_release_canonical
+    DATA["MB_release_canonical"] = load_pkl(join(config.MB_ROOT, "release_canonical.pkl"))
     
     console.log("loading release metadata...")
-    MB_release = pd.read_parquet(
-        join(config.MB_ROOT, "release.parquet")
-    )
-    MB_release.set_index("release_mbid", inplace=True)
-    DATA["MB_release"] = MB_release
-
-    # Converting MB_rec_gid to set for faster lookup
-    rec_gid_set = set(MB_rec_gid.index)
-    DATA["rec_gid_set"] = rec_gid_set
+    DATA["MB_release"] = load_pkl(join(config.MB_ROOT, "release.pkl"))
 
     TIME_LOGS["MB_end"] = monotonic()
     console.log(
@@ -125,7 +98,7 @@ DATA = load_data()
 def process_df_new(df):
     df = df.fillna('')
 
-    rec_gid_set = DATA["rec_gid_set"]
+    MB_rec_gid = DATA["MB_rec_gid"]
     MB_rec_redirect = DATA["MB_rec_redirect"]
     MB_rel_redirect = DATA["MB_rel_redirect"]
     MB_rec_canonical = DATA["MB_rec_canonical"]
@@ -146,7 +119,7 @@ def process_df_new(df):
             # If the row has a recording, we throw away the release and artist and recompute it using our dataset
             # 89f6f6e8-892d-4270-be69-a3007db87940 is a valid recording which needs to be redirected
             orig_recording = recording
-            if recording not in rec_gid_set:
+            if recording not in MB_rec_gid:
                 recording = io.get(MB_rec_redirect, "new", recording)
             if recording:
                 canonical_recording_id = io.get(MB_rec_canonical, "new", recording)
@@ -155,23 +128,25 @@ def process_df_new(df):
                 release_id = io.get(MB_artist_credit_list, "release_mbid", recording)
                 artist_ids = io.get(MB_artist_credit_list, "artist_mbids", recording)
                 if not release_id:
-                    print(f"When getting a recording's release, got no value: {orig_recording=}, {recording=}, {canonical_recording_id=}")
+                    logging.debug(f"When getting a recording's release, got no value: {orig_recording=}, {recording=}, {canonical_recording_id=}")
 
                 # TODO: If the recording id _is_ in rec_gid_set but is _not in_ MB_artist_credit_list, then it's likely that 
                 #       this is a non-album track, which isn't present in the canonical mapping.
                 #       In that case, we need to actually do a mapper lookup to convert the musicbrainz name+artist credit
                 #       to our canonical recording id, without going through the MB_rec_canonical table
-                if recording in rec_gid_set and not release_id:
-                    print(f"{recording=}: Unexpectedly found no recording metadata even though it's a valid id. non-album track?")
+                if recording in MB_rec_gid and not release_id:
+                    # recording_name, artist_credit = get_metadata_for_recording_mbid_db(recording)
+                    # print(f"https://musicbrainz.org/recording/{recording}: Unexpectedly found no recording metadata even though it's a valid id. non-album track?")
+                    # print(get_url_mapper(artist_credit, recording_name))
                     # TODO: For now just skipping this
                     continue
                 else:
                     assert release_id
-                    assert artist_ids.tolist()
+                    assert len(artist_ids)
 
                 complete_output.append({   
                     "timestamp": timestamp, 
-                    "artist_mbids": artist_ids.tolist(), 
+                    "artist_mbids": ",".join(artist_ids), 
                     "release_mbid": release_id,
                     "recording_mbid": recording
                 })
@@ -198,15 +173,14 @@ def process_df_new(df):
                 release = canonical_release_id
             artist_ids = io.get(MB_release, "artist_mbids", release)
             if artist_ids is None:
-                print(f"{orig_release=}: Unexpectedly found no release metadata")
+                logging.debug(f"{orig_release=}: Unexpectedly found no release metadata")
                 continue
 
-            artist_ids_list = artist_ids.tolist()
-            if artist_ids_list:
+            if artist_ids:
                 missing_output.append(
                     {
                         "timestamp": timestamp, 
-                        "artist_mbids": artist_ids_list, 
+                        "artist_mbids": ",".join(artist_ids),
                         "release_mbid": release,
                         "recording_mbid": ""
                     }
@@ -214,7 +188,7 @@ def process_df_new(df):
                 # TODO: If the release id is invalid (missing from the release table), blank it out (and continue to artist)
                 continue
             else:
-                print(f"Cannot find a release id: {orig_release=}, {release=}, {canonical_release_id=}")
+                logging.debug(f"Cannot find a release id: {orig_release=}, {release=}, {canonical_release_id=}")
                 # If artist_ids is blank, it means that there's no such release with this ID (because we find this value
                 # by looking up the id in the full release table)
                 # This means that the id isn't a real release, blank out the release and fall down to the artist check
@@ -230,7 +204,7 @@ def process_df_new(df):
                 artist = artist_redirect
             missing_output.append({
                 "timestamp": timestamp, 
-                "artist_mbids": [artist], 
+                "artist_mbids": artist, 
                 "release_mbid": "",
                 "recording_mbid": ""
             })
@@ -247,55 +221,9 @@ def process_df_new(df):
 
     return complete_output, missing_output
 
-
-# Main function to process dataframe
-def process_df(
-    df_input: pd.DataFrame,
-) -> pd.DataFrame:
-    """Take an input df and process it into a cleaned df
-
-    Args:
-        df_input (pandas.DataFrame): input dataframe with columns: <timestamp, artist_MBID, release_MBID, recording_MBID>
-
-    Returns:
-        pandas.DataFrame: Cleaned dataframe with columns: <timestamp, artist_MBID, release_MBID, recording_MBID>
-    """
-
-    rec_gid_set = DATA["rec_gid_set"]
-    MB_rec_redirects = DATA["MB_rec_redirects"]
-    MB_rec_canonical = DATA["MB_rec_canonical"]
-    MB_artist_credit_list = DATA["MB_artist_credit_list"]
-
-    # 1. Get redirects for MBIDs that aren't present in rec_gid_set using MB_rec_redirects.
-    df_input["recording_MBID"] = df_input.recording_MBID.map(
-        lambda x: io.replace(x, MB_rec_redirects, "new") if x not in rec_gid_set else x
-    )
-
-    # 2. Find canonical recordings for all cleaned/uncleaned recording_MBIDs
-    df_input["recording_MBID"] = df_input["recording_MBID"].map(
-        lambda x: io.replace(x, MB_rec_canonical, "new")
-        if io.replace(x, MB_rec_canonical, "new") is not nan
-        else x
-    )
-
-    # 3. Fetch artist, release_MBIDs for all recording_MBIDs
-    artist_release_mbids = df_input["recording_MBID"].map(
-        lambda x: io.replace_multi(x, MB_artist_credit_list)
-    )
-
-    df_input[["artist_MBID", "release_MBID"]] = pd.DataFrame(
-        artist_release_mbids.tolist(),
-        columns=["artist_MBID", "release_MBID"],
-        index=df_input.index,
-    )
-
-    return df_input
-
-
 # Driver function to read, clean, and write all the file_paths in the path_list, while logging their details
 def driver(
     path_list: list,
-    reset_log_before_run: bool = clean_master_config.RESET_LOG_BEFORE_RUN,
 ) -> None:
 
     """Driver function to read, clean, and write all the file_paths in the path_list, while logging their details
@@ -308,9 +236,8 @@ def driver(
     """
     console.log("Looping through MLHD files...")
 
-    if reset_log_before_run:
-        with open(LOG_WRITE_PATH, "w") as f:
-            f.write("path,log_value,time_taken,timestamp\n")
+    with open(LOG_WRITE_PATH, "w") as f:
+        f.write("path,log_value,time_taken,timestamp\n")
 
     file_counter = 0
     start_loop = monotonic()
@@ -355,13 +282,10 @@ def driver(
 
 def write_master_log(
     stuff_to_log: list,
-    write_path: str,
-    reset_log_before_run: bool = clean_master_config.RESET_LOG_BEFORE_RUN,
 ) -> None:
 
-    if clean_master_config.RESET_LOG_BEFORE_RUN:
-        with open(MASTER_LOG_WRITE_PATH, "w") as f:
-            f.write("master_time,process_time\n")
+    with open(MASTER_LOG_WRITE_PATH, "w") as f:
+        f.write("master_time,process_time\n")
 
     log_str = ",".join([str(item) for item in stuff_to_log]) + "\n"
 
@@ -382,9 +306,6 @@ def main() -> None:
         driver(MLHD_PATHS)
 
     end_process = monotonic()
-    ####
-    ### Outro ###
-    ####
 
     master_end = monotonic()  # End the master timer
     process_time = round(
@@ -392,7 +313,7 @@ def main() -> None:
     )  # Calculate the time taken to process the data
     master_time = round(master_end - master_start, 2)  # Calculate the master time
 
-    write_master_log([master_time, process_time], MASTER_LOG_WRITE_PATH)
+    write_master_log([master_time, process_time])
 
     console.log(f"Finished Process in {master_time} seconds")
     console.log(f"Output log written to {LOG_WRITE_PATH}")

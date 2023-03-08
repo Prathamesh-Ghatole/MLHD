@@ -306,11 +306,15 @@ def replace(value, lookup_df, col_name):
     except KeyError:
         return nan
 
-def get(lookup_df, col_name, value):
+def get_dataframe(lookup_df, col_name, value):
     try:
         return lookup_df.at[value, col_name]
     except KeyError:
         return None
+
+
+def get(lookup, col_name, value):
+    return lookup.get(value, {}).get(col_name)
 
 
 def replace_multi(value, lookup_df):

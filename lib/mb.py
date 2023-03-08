@@ -119,7 +119,7 @@ def get_artist_credit_release_gid(limit=None):
     # pandas knows how to convert a postgres uuid into a str, but doesn't know
     # how to turn uuid[] into str[], so cast it to text[], which it _does_ know
     return get_table("""
-    SELECT recording_mbid, artist_mbids::text[], release_mbid 
+    SELECT recording_mbid, artist_mbids::text[], release_mbid, artist_credit_name, recording_name 
     FROM mapping.canonical_musicbrainz_data""", limit)
 
 def get_mbc_combined(limit=None):
